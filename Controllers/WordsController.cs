@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
+using words_api.Models;
+using words_api.Services;
 
 namespace words_api.Controllers
 {
@@ -7,30 +10,43 @@ namespace words_api.Controllers
     public class WordsController : Controller
     {
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IEnumerable<Word> Get()
         {
-            return new string[] { "value1", "value2" };
+            WordsService service = new WordsService();
+            return service.GetAll();
         }
 
         [HttpGet("{id}")]
-        public string Get(int id)
+        public Word Get(int id)
         {
-            return "value";
+            WordsService service = new WordsService();
+            return service.GetById(id);
         }
 
         [HttpPost]
-        public void Post([FromBody]string value)
+        public Word Post([FromBody]JObject value)
         {
+            WordsService service = new WordsService();
+            Word posted = value.ToObject<Word>();
+
+            return service.Add(posted);
         }
 
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
+        public Word Put(int id, [FromBody]JObject  value)
         {
+            WordsService service = new WordsService();
+            Word posted = value.ToObject<Word>();
+            posted.WordId = id; // Ensure an id is attached
+
+            return service.Update(posted);
         }
 
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public bool Delete(int id)
         {
+            WordsService service = new WordsService();
+            return service.Delete(id);
         }
     }
 }
